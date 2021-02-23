@@ -13,7 +13,7 @@
 - [ ] Improve device write performance.
 - [ ] Implement local EEPROM cache and auto-program button.
 - [ ] Integrate ArduinoISP support.
-- [ ] Power delivery for different EEPROM devices.
+- [x] Power delivery for different EEPROM devices.
 - [ ] Write fail detection.
 - [ ] EPROM support?
 - [ ] PCB design.
