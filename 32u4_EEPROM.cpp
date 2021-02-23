@@ -128,7 +128,8 @@ void write_byte(uint16_t address, uint8_t data) {
   // Wait until data is correct
   data_bus_input();
   set_oe(LOW); // Enable Output
-  while (data != read_data_bus()) { }
+  uint8_t i = 255;
+  while (data != read_data_bus() && i-- > 0) { }
 
   set_oe(HIGH); // Disable Output
   set_ce(HIGH); // Disable Chip Select

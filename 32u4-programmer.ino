@@ -92,7 +92,7 @@ void setup() {
   digitalWrite(STATUS, LOW);
   pinMode(PIEZO, OUTPUT);
   digitalWrite(PIEZO, LOW);
-  
+
   // Setup Programmers
   setupEEPROM();
   setupISP();
@@ -105,7 +105,7 @@ void loop() {
   // Wait for command to come in
   readCommand();
   setStatus(HIGH);
-  
+
   Command command = parseCommand();
 
   // Filter command values
@@ -154,7 +154,7 @@ void loop() {
           cmd_buffer[index++] = Serial.read();
         }
       }
-      
+
       #ifdef DEBUG
       index = 0;
       Serial.print("Received ");
@@ -163,7 +163,7 @@ void loop() {
       }
       Serial.println();
       #endif
-      
+
       index = 0;
       while (index < command.dataLength) {
         block_buffer[index] = hexByte(cmd_buffer + (index * 2));
@@ -178,9 +178,9 @@ void loop() {
       }
       Serial.println();
       #endif
-      
+
       write_block(command.startAddress, block_buffer, command.dataLength);
-      
+
       Serial.println('%');
       break;
     case CMD_WRITE_BIN:
@@ -190,7 +190,7 @@ void loop() {
         }
       }
       write_block(command.startAddress, block_buffer, command.dataLength);
-      
+
       Serial.println('%');
       break;
   }
@@ -223,7 +223,7 @@ void readCommand() {
 
 Command parseCommand() {
   Command command;
-  
+
   // Convert commas to '\0' terminator
   cmd_buffer[1] = 0; // Command character
   cmd_buffer[6] = 0; // Start address (4 bytes)

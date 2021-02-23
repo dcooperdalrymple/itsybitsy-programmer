@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # vim:fileencoding=ISO-8859-1
 #
 # Title: 32u4 Programmer

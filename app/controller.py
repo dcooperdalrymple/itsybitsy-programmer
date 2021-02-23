@@ -10,7 +10,7 @@ class AppController:
     def __init__(self, view):
         self.default_timeout = 0.25
         self.block_timeout = 10
-        self.block_size = 0x0400
+        self.block_size = 0x0040
         self.write_cycles = 3
 
         self.devices = {
@@ -176,7 +176,7 @@ class AppController:
         for n, (portname, desc, hwid) in enumerate(sorted(serial.tools.list_ports.comports())):
             if self.checkProgrammer(portname) == True:
                 info = self.getInfo()
-                choices.append("{} v{} [{}]".format(info['Title'], info['Software Version'], portname))
+                choices.append("{} v{} [{}]".format(info.get('Title'), info.get('Software Version'), portname))
 
         plural = ""
         if len(choices) > 1: plural = "s"
@@ -192,7 +192,7 @@ class AppController:
 
         info = self.getInfo()
 
-        if info != False and len(info) > 0 and info['Title'] == '32u4 Programmer':
+        if info != False and len(info) > 0 and info.get('Title') == '32u4 Programmer':
             self.view.LogSuccess("Successfully identified programmer on {}".format(portname))
             return True
         else:
@@ -292,7 +292,7 @@ class AppController:
                 self.serial.timeout = self.block_timeout
                 try:
                     for line in range(lines):
-                        read += str(self.serial.read_until('\n')) + '\n'
+                        read += str(self.serial.read_until(b'\n')) + '\n'
                 except serial.SerialException as e:
                     self.view.LogError(str(e), "Command Read Error")
                     self.serial.timeout = self.default_timeout
@@ -328,7 +328,7 @@ class AppController:
 
         info_str = False
         try:
-            info_str = str(self.serial.read_until('\n'))
+            info_str = str(self.serial.read_until(b'\n'))
         except serial.SerialException as e:
             self.view.LogError(str(e), "Serial Read Error")
             return False
@@ -345,7 +345,7 @@ class AppController:
             if len(info_line_arr) < 2:
                 continue
 
-            info_data[info_line_arr[0].strip()] = info_line_arr[1].strip()
+            info_data[info_line_arr[0].strip(" b'")] = info_line_arr[1].strip(" b'")
 
         return info_data
 
@@ -404,7 +404,7 @@ class AppController:
         self.serial.timeout = self.default_timeout
 
         # Convert bytes to array of ints
-        block = [ord(x) for x in block]
+        block = [x for x in block]
 
         return block
 
@@ -487,7 +487,7 @@ class AppController:
             self.serial.flush()
 
             # Wait for completion
-            self.serial.read_until('%')
+            self.serial.read_until(b'%')
             self.serial.reset_input_buffer() # Clears newline
 
         except serial.SerialException as e:

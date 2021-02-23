@@ -327,20 +327,23 @@ class EepromPanel(wx.Panel):
             wx.CallAfter(self.view.frame.hexPanel.loadContents, data)
 
             # Select file to save hex file
-            with wx.FileDialog(self, "Save ROM Hex File",
-                wildcard = "Hex files (*.hex;*.bin)|*.hex;*.bin",
-                style = wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
-                defaultDir = self.view.defaultDir) as fileDialog:
-
-                if fileDialog.ShowModal() != wx.ID_CANCEL:
-                    pathname = fileDialog.GetPath()
-                    self.view.updateDefaultDir(pathname)
-
-                    # Write data to file
-                    self.controller.exportFile(pathname, data)
+            wx.CallAfter(self.readFileSaveDialog, data)
 
         self.view.Log("Device read process completed.")
         self.enableControls()
+
+    def readFileSaveDialog(self, data):
+        with wx.FileDialog(self, "Save ROM Hex File",
+            wildcard = "Hex files (*.hex;*.bin)|*.hex;*.bin",
+            style = wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
+            defaultDir = self.view.defaultDir) as fileDialog:
+
+            if fileDialog.ShowModal() != wx.ID_CANCEL:
+                pathname = fileDialog.GetPath()
+                self.view.updateDefaultDir(pathname)
+
+                # Write data to file
+                self.controller.exportFile(pathname, data)
 
     def onWriteClick(self, e):
         self.disableControls()
@@ -646,6 +649,10 @@ class DebugPanel(wx.Panel):
             self.view.LogWarning("No valid command selected.", "Unable to Send Command")
             return
 
+        if self.controller.device == False:
+            self.view.LogWarning("No device selected.", "Unable to Send Command")
+            return
+
         address = self.getHexValue(self.addressField, 4)
         if commandInfo["address"] == False: address = None
 
@@ -710,7 +717,10 @@ class DebugPanel(wx.Panel):
                 self.resultField.SetValue("")
                 return
             else:
-                self.resultField.SetValue(result)
+                try:
+                    self.resultField.SetValue(result.decode())
+                except (TypeError, UnicodeDecodeError, AttributeError):
+                    self.resultField.SetValue(result)
         else:
             self.resultField.SetValue("")
 
