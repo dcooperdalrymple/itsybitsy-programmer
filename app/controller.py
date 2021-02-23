@@ -10,7 +10,6 @@ class AppController:
     def __init__(self, view):
         self.default_timeout = 0.25
         self.block_timeout = 10
-        self.block_size = 0x0040
         self.write_cycles = 3
 
         self.devices = {
@@ -31,6 +30,16 @@ class AppController:
             },
         }
         self.device = False
+
+        self.block_sizes = [
+            0x0010,
+            0x0040,
+            0x0080,
+            0x0100,
+            0x0200,
+            0x0400
+        ]
+        self.block_size = False
 
         self.commands = {
             "V": {
@@ -147,6 +156,38 @@ class AppController:
         else:
             return self.devices[name]
 
+    def setDevice(self, name):
+        if not name in self.devices:
+            self.device = False
+            self.view.LogWarning("Device does not exist in database")
+            return False
+        else:
+            self.device = name
+            self.view.LogSuccess('Programmer configured to use ' + self.devices[name]["name"])
+            return self.devices[name]
+
+    def getBlockSizes(self):
+        return ["0x{0:0{1}X}".format(x, 4) for x in self.block_sizes]
+
+    def getBlockSize(self):
+        return self.block_size
+
+    def setBlockSize(self, size):
+        if isinstance(size, str):
+            size = int(size, 16)
+        if not isinstance(size, int):
+            self.view.LogWarning("Block size improperly formatted")
+            return False
+
+        if not size in self.block_sizes:
+            self.block_size = False
+            self.view.LogWarning("Block size invalid")
+            return False
+        else:
+            self.block_size = size
+            self.view.LogSuccess('Programmer configured to use a block size of ' + str(self.block_size))
+            return self.block_size
+
     def getCommands(self):
         choices = []
         for command in self.commands:
@@ -158,16 +199,6 @@ class AppController:
             return False
         else:
             return self.commands[command]
-
-    def setDevice(self, name):
-        if not name in self.devices:
-            self.device = False
-            self.view.LogWarning("Device does not exist in database")
-            return False
-        else:
-            self.device = name
-            self.view.LogSuccess('Programmer configured to use ' + self.devices[name]["name"])
-            return self.devices[name]
 
     def getProgrammers(self):
         self.view.Log("Querying serial COM ports for programming devices.")

@@ -249,6 +249,19 @@ class EepromPanel(wx.Panel):
         programmerPanel.SetSizer(programmerSizer)
         self.sizer.Add(programmerPanel, 0, wx.EXPAND | wx.BOTTOM, 16)
 
+        # Block Size
+        blockPanel = wx.Panel(self.panel)
+        blockSizer = wx.BoxSizer(wx.VERTICAL)
+
+        blockSizer.Add(wx.StaticText(blockPanel, wx.ID_ANY, "Block Size"), 0, wx.EXPAND | wx.BOTTOM | wx.ALIGN_LEFT, 4)
+
+        self.blockList = wx.Choice(blockPanel, choices = self.controller.getBlockSizes(), name = 'Block Size', style = wx.CB_SORT)
+        self.blockList.Bind(wx.EVT_CHOICE, self.onBlockSelect)
+        blockSizer.Add(self.blockList, 0, wx.EXPAND)
+
+        blockPanel.SetSizer(blockSizer)
+        self.sizer.Add(blockPanel, 0, wx.EXPAND | wx.BOTTOM, 16)
+
         # Action Buttons
 
         buttonPanel = wx.Panel(self.panel)
@@ -287,6 +300,7 @@ class EepromPanel(wx.Panel):
         name = self.deviceList.GetString(index)
         if not name or len(name) <= 0:
             self.view.LogWarning("Invalid device selected")
+            return
 
         self.controller.setDevice(name)
 
@@ -308,6 +322,16 @@ class EepromPanel(wx.Panel):
 
         if self.controller.setProgrammer(portname):
             self.view.LogSuccess("Successfully connected with programmer on {}.".format(portname))
+
+    def onBlockSelect(self, e):
+        index = self.blockList.GetSelection()
+        size = self.blockList.GetString(index)
+
+        if not size or len(size) <= 0:
+            self.view.LogWarning("Invalid block size selected")
+            return
+
+        self.controller.setBlockSize(size)
 
     def onReadClick(self, e):
         self.disableControls()
