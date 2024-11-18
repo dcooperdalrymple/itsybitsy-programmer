@@ -9,6 +9,10 @@ Parallel EEPROM and ATtiny13A ISP programmer with native USB support using the A
 
 ![Breadboard Prototype](/assets/breadboard-prototype.jpg)
 
+## Repository Archival [2024-11-18]
+
+This project has been archived as of 2024-11-18 and replaced by its predecessor, [PicoPROM](https://github.com/relic-se/picoprom). The new device is more affordable and capable of reading and writing to standard EEPROM devices (ie: AT28C256) and reading from other devices such as Atari 2600 cartridges. The PicoPROM no longer functions as an ISP programmer, but other devices are far more capable for that functionality.
+
 ## Supported ICs
 
 ### EEPROM
